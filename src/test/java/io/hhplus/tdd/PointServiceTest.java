@@ -167,5 +167,14 @@ public class PointServiceTest {
         assertThrows(IllegalArgumentException.class, () -> pointService.charge(id, amount));
     }
 
+    @Test
+    @DisplayName("사용 시 포인트가 양수가 아닐 때 에러 발생")
+    void 사용_시_포인트는_양수_아닐때_에러() {
+        long id = 1L;
+        long amount = -1L;
+
+        assertThrows(IllegalArgumentException.class, () -> pointService.use(id, amount));
+    }
+
 
 }
