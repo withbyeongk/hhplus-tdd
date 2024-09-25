@@ -163,9 +163,8 @@ public class PointServiceTest {
     void 충전_시_포인트는_양수_아닐때_에러() {
         long id = 1L;
         long amount = -1L;
-        long updateMillis = 0L;
 
-        assertThrows(IllegalArgumentException.class, () -> new UserPoint(id, amount, updateMillis));
+        assertThrows(IllegalArgumentException.class, () -> pointService.charge(id, amount));
     }
 
 
