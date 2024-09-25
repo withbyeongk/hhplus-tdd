@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doReturn;
 
 @ExtendWith(MockitoExtension.class)
@@ -96,6 +97,18 @@ public class PointServiceTest {
         assertEquals(insertedPointHistory.updateMillis(), returnPointHistories.get(0).updateMillis());
     }
 
-    
+    @Test
+    @DisplayName("회원 포인트 사용시 잔여 포인트가 부족할 때 에러 발생")
+    void 잔여_포인트_없어서_에러_발생() {
+        long id = 1L;
+        long amount = 100L;
+        long updateMillis = 0L;
+
+        UserPoint userPoint = new UserPoint(id, amount, updateMillis);
+
+        doReturn(userPoint).when(userPointTable).selectById(1L);
+
+        assertThrows(IllegalArgumentException.class, () -> pointService.use(id, amount + 1L));
+    }
 
 }
