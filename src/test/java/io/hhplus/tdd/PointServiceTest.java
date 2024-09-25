@@ -57,23 +57,35 @@ public class PointServiceTest {
         long beforeUpdateMillis = 0L;
         long afterUpdateMillis = 1L;
 
-        // 충전 내역
+
+        UserPoint beforeUserPoint = new UserPoint(id, beforeAmount, beforeUpdateMillis);
+        UserPoint chargedUserPoint = new UserPoint(id, beforeAmount + chargeAmount, afterUpdateMillis);
+
+
+        doReturn(beforeUserPoint).when(userPointTable).selectById(id);
+        doReturn(chargedUserPoint).when(userPointTable).insertOrUpdate(id, beforeAmount + chargeAmount);
+
+
+        UserPoint returnUserPoint = pointService.charge(id, chargeAmount);
+
+        assertEquals(returnUserPoint.id(), chargedUserPoint.id());
+        assertEquals(returnUserPoint.point(), chargedUserPoint.point());
+        assertEquals(returnUserPoint.updateMillis(), chargedUserPoint.updateMillis());
+    }
+
+    @Test
+    @DisplayName("특정 id에 포인트 충전/사용 시 내역이 저장된다.")
+    void 포인트_충전_시_내역_저장() {
+
+        long id = 1L;
+        long chargeAmount = 50L;
+
         PointHistory insertedPointHistory = new PointHistory(1L, id, chargeAmount, TransactionType.CHARGE, System.currentTimeMillis());
         List<PointHistory> userHistories = new ArrayList<>();
         userHistories.add(insertedPointHistory);
 
-        // 포인트
-        UserPoint beforeUserPoint = new UserPoint(id, beforeAmount, beforeUpdateMillis);
-        UserPoint chargedUserPoint = new UserPoint(id, beforeAmount + chargeAmount, afterUpdateMillis);
-
-        // 충전 내역
         doReturn(userHistories).when(pointHistoryTable).selectAllByUserId(id);
 
-        // 포인트
-        doReturn(beforeUserPoint).when(userPointTable).selectById(id);
-        doReturn(chargedUserPoint).when(userPointTable).insertOrUpdate(id, beforeAmount + chargeAmount);
-
-        // 충전 내역
         List<PointHistory> returnPointHistories = pointService.selectAllByUserId(1L);
 
         assertEquals(1, returnPointHistories.size());
@@ -82,15 +94,8 @@ public class PointServiceTest {
         assertEquals(insertedPointHistory.amount(), returnPointHistories.get(0).amount());
         assertEquals(insertedPointHistory.type(), returnPointHistories.get(0).type());
         assertEquals(insertedPointHistory.updateMillis(), returnPointHistories.get(0).updateMillis());
-
-        // 포인트
-        UserPoint returnUserPoint = pointService.charge(id, chargeAmount);
-
-        assertEquals(returnUserPoint.id(), chargedUserPoint.id());
-        assertEquals(returnUserPoint.point(), chargedUserPoint.point());
-        assertEquals(returnUserPoint.updateMillis(), chargedUserPoint.updateMillis());
     }
 
-
+    
 
 }
