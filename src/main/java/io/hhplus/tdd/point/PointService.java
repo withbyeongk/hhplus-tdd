@@ -33,6 +33,18 @@ public class PointService {
     }
 
     public UserPoint use(long id, long amount) {
-        return new UserPoint(0, 0, 0);
+        UserPoint userPoint = userPointTable.selectById(id);
+
+        long remainingPoints = userPoint.point() - amount;
+
+        if (remainingPoints < 0) {
+            throw new IllegalArgumentException("포인트가 부족합니다.");
+        }
+
+        UserPoint usedUserPoint = userPointTable.insertOrUpdate(id, remainingPoints);
+
+        pointHistoryTable.insert(id, amount, TransactionType.USE, System.currentTimeMillis());
+
+        return usedUserPoint;
     }
 }
