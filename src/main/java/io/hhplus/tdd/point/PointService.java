@@ -23,6 +23,10 @@ public class PointService {
     }
 
     public UserPoint charge(long id, long amount) {
+        if (amount <= 0) {
+            throw new IllegalArgumentException("충전 금액은 0보다 커야 합니다.");
+        }
+
         UserPoint userPoint = userPointTable.selectById(id);
 
         UserPoint chargedUserPoint = userPointTable.insertOrUpdate(id, userPoint.point() + amount);
