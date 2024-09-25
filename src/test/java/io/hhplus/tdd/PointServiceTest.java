@@ -146,6 +146,4 @@ public class PointServiceTest {
         assertEquals(insertedPointHistory2.updateMillis(), returnPointHistories.get(1).updateMillis());
     }
 
-
-
 }
