@@ -145,6 +145,7 @@ public class PointServiceTest {
         assertEquals(insertedPointHistory2.type(), returnPointHistories.get(1).type());
         assertEquals(insertedPointHistory2.updateMillis(), returnPointHistories.get(1).updateMillis());
     }
+
     @Test
     @DisplayName("id가 양수인지 확인하는 테스트")
     void 사용자포인트_id_양수_아니면_에러() {
@@ -156,5 +157,16 @@ public class PointServiceTest {
         assertThrows(IllegalArgumentException.class, () -> new UserPoint(id1, amount, updateMillis));
         assertThrows(IllegalArgumentException.class, () -> new UserPoint(id2, amount, updateMillis));
     }
+
+    @Test
+    @DisplayName("충전 시 포인트가 양수가 아닐 때 에러 발생")
+    void 충전_시_포인트는_양수_아닐때_에러() {
+        long id = 1L;
+        long amount = -1L;
+        long updateMillis = 0L;
+
+        assertThrows(IllegalArgumentException.class, () -> new UserPoint(id, amount, updateMillis));
+    }
+
 
 }
