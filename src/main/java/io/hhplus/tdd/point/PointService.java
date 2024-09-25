@@ -37,6 +37,10 @@ public class PointService {
     }
 
     public UserPoint use(long id, long amount) {
+        if (amount <= 0) {
+            throw new IllegalArgumentException("사용 포인트는 0보다 커야 합니다.");
+        }
+
         UserPoint userPoint = userPointTable.selectById(id);
 
         long remainingPoints = userPoint.point() - amount;
