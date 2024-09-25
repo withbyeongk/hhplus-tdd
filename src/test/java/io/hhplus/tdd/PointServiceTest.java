@@ -145,5 +145,16 @@ public class PointServiceTest {
         assertEquals(insertedPointHistory2.type(), returnPointHistories.get(1).type());
         assertEquals(insertedPointHistory2.updateMillis(), returnPointHistories.get(1).updateMillis());
     }
+    @Test
+    @DisplayName("id가 양수인지 확인하는 테스트")
+    void 사용자포인트_id_양수_아니면_에러() {
+        long id1 = -1L;
+        long id2 = 0L;
+        long amount = 100L;
+        long updateMillis = 0L;
+
+        assertThrows(IllegalArgumentException.class, () -> new UserPoint(id1, amount, updateMillis));
+        assertThrows(IllegalArgumentException.class, () -> new UserPoint(id2, amount, updateMillis));
+    }
 
 }
