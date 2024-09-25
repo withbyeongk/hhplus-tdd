@@ -111,4 +111,41 @@ public class PointServiceTest {
         assertThrows(IllegalArgumentException.class, () -> pointService.use(id, amount + 1L));
     }
 
+    @Test
+    @DisplayName("특정 id로 포인트 충전/사용 이력 조회")
+    void 포인트_사용_충전_이력_조회() {
+        long historyId = 1L;
+        long userId = 2L;
+        long amount1 = 200L;
+        long amount2 = 100L;
+        long updateMillis1 = 1L;
+        long updateMillis2 = 2L;
+
+
+        PointHistory insertedPointHistory1 = new PointHistory(historyId, userId, amount1, TransactionType.CHARGE, updateMillis1);
+        PointHistory insertedPointHistory2 = new PointHistory(historyId + 1, userId, amount2, TransactionType.USE, updateMillis2);
+        List<PointHistory> userHistories = new ArrayList<>();
+        userHistories.add(insertedPointHistory1);
+        userHistories.add(insertedPointHistory2);
+
+        doReturn(userHistories).when(pointHistoryTable).selectAllByUserId(userId);
+
+        List<PointHistory> returnPointHistories = pointService.selectAllByUserId(userId);
+
+        assertEquals(2, returnPointHistories.size());
+        assertEquals(insertedPointHistory1.id(), returnPointHistories.get(0).id());
+        assertEquals(insertedPointHistory1.userId(), returnPointHistories.get(0).userId());
+        assertEquals(insertedPointHistory1.amount(), returnPointHistories.get(0).amount());
+        assertEquals(insertedPointHistory1.type(), returnPointHistories.get(0).type());
+        assertEquals(insertedPointHistory1.updateMillis(), returnPointHistories.get(0).updateMillis());
+
+        assertEquals(insertedPointHistory2.id(), returnPointHistories.get(1).id());
+        assertEquals(insertedPointHistory2.userId(), returnPointHistories.get(1).userId());
+        assertEquals(insertedPointHistory2.amount(), returnPointHistories.get(1).amount());
+        assertEquals(insertedPointHistory2.type(), returnPointHistories.get(1).type());
+        assertEquals(insertedPointHistory2.updateMillis(), returnPointHistories.get(1).updateMillis());
+    }
+
+
+
 }
