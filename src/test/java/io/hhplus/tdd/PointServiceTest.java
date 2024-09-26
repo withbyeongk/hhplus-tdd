@@ -15,6 +15,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -176,5 +179,37 @@ public class PointServiceTest {
         assertThrows(IllegalArgumentException.class, () -> pointService.use(id, amount));
     }
 
+    @Test
+    @DisplayName("같은 id로 요청이 100번 있을 때 빠짐없이 처리되는지 테스트")
+    void 여러번_반복_충전_시_누락없이_처리되는지_테스트() throws InterruptedException {
 
+        long id = 1L;
+        long addAmount = 100L;
+
+        // given
+        final int threadCount = 100;
+        final int threadPoolSize = 32;
+
+        final ExecutorService executorService = Executors.newFixedThreadPool(threadPoolSize);
+        final CountDownLatch countDownLatch = new CountDownLatch(threadCount);
+
+        pointService.charge(id, addAmount);
+
+        // when
+        for (int i = 0; i < threadCount; i++) {
+            executorService.submit(() -> {
+                try {
+                    pointService.use(id, 1L);
+                } finally {
+                    countDownLatch.countDown();
+                }
+            });
+        }
+        countDownLatch.await();
+
+        UserPoint resultUser = pointService.selectById(id);
+
+        // then
+        assertEquals(9899, resultUser.point());
+    }
 }
