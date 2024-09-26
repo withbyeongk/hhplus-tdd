@@ -23,6 +23,8 @@ public class PointServiceTest {
     @InjectMocks
     private PointService pointService;
     @Mock
+    private LockManager lockManager;
+    @Mock
     private UserPointTable userPointTable;
     @Mock
     private PointHistoryTable pointHistoryTable;
